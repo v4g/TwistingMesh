@@ -27,14 +27,19 @@ float defectAngle=0;
 pts P = new pts(); // polyloop in 3D
 pts Q = new pts(); // second polyloop in 3D
 pts R = new pts(); // inbetweening polyloop L(P,t,Q);
-    
+
+//delete later
+pt bA = P(100,100,30);
+pt bB = P(200,100,10);
+vec T1 = V(0,0,1);
+vec T2 = V(1,1,-1);
 
   
 void setup() {
   myFace = loadImage("data/pic.jpg");  // load image from file pic.jpg in folder data *** replace that file with your pic of your own face
   textureMode(NORMAL);          
   //size(900, 900, P3D); // P3D means that we will do 3D graphics
-  size(600, 600, P3D); // P3D means that we will do 3D graphics
+  size(900, 900, P3D); // P3D means that we will do 3D graphics
   P.declare(); Q.declare(); R.declare(); // P is a polyloop in 3D: declared in pts
   //P.resetOnCircle(6,100); Q.copyFrom(P); // use this to get started if no model exists on file: move points, save to file, comment this line
   P.loadPts("data/pts");  Q.loadPts("data/pts2"); // loads saved models from file (comment out if they do not exist yet)
@@ -50,7 +55,6 @@ void draw() {
   showFloor(); // draws dance floor as yellow mat
   doPick(); // sets Of and axes for 3D GUI (see pick Tab)
   P.SETppToIDofVertexWithClosestScreenProjectionTo(Mouse()); // for picking (does not set P.pv)
- 
   R.copyFrom(P); 
   for(int i=0; i<level; i++) 
     {
@@ -62,13 +66,15 @@ void draw() {
     //if(method==1) {Q.subdivideFourPointInto(R);}
     //if(method==0) {Q.subdivideQuadraticInto(R); }
     }
-  R.displaySkater();
+  //R.displaySkater();
   
-  fill(blue); if(showCurve) Q.drawClosedCurve(3);
+  //fill(blue); if(showCurve) Q.drawClosedCurve(3);
   if(showControl) {fill(grey); P.drawClosedCurve(3);}  // draw control polygon 
   fill(yellow,100); P.showPicked(); 
   
-
+  fill(black);
+  //biarc(bA,bB,T1,T2);
+  
   //if(animating)  
   //  {
   //  f++; // advance frame counter
