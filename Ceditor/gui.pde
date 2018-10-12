@@ -47,7 +47,7 @@ void keyPressed()
 
 void mouseWheel(MouseEvent event) 
   {
-  dz -= event.getAmount(); 
+  dz -= (10*event.getAmount()); 
   change=true;
   }
 
