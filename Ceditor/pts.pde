@@ -5,6 +5,7 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
     pt[] G = new pt [maxnv];           // geometry table (vertices)
     char[] L = new char [maxnv];             // labels of points
     vec [] LL = new vec[ maxnv];  // displacement vectors
+    vec [] T = new vec[maxnv];   //tangent vectors
     Boolean loop=true;          // used to indicate closed loop 3D control polygons
     int pv =0,     // picked vertex index,
         iv=0,      //  insertion vertex index
@@ -17,6 +18,7 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
     {
     for (int i=0; i<maxnv; i++) G[i]=P(); 
     for (int i=0; i<maxnv; i++) LL[i]=V(); 
+    for (int i=0; i<maxnv; i++) T[i]=V(0.1f + random(1.0f),0.1f + random(1.0f),0.1f + random(1.0f)); 
     return this;
     }     // init all point objects
   pts empty() {nv=0; pv=0; return this;}                                 // resets P so that we can start adding points
@@ -88,6 +90,17 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
     fill(magenta);
     for (int v=0; v<nv-1; v++) stub(G[v],V(G[v],G[v+1]),r,r);  
     stub(G[nv-1],V(G[nv-1],G[0]),r,r);
+    for (int v=0; v < nv-1; v++)
+    {
+    try{
+      biarc(G[v],G[(v+1)%nv],T[v],T[(v+1)%nv]);
+      }
+    catch(Exception e)
+    {
+        print("Exception at "+v); //<>//
+    }
+  }
+    /*
     pushMatrix(); //translate(0,0,1); 
     scale(1,1,0.03);  
     fill(grey);
@@ -95,6 +108,7 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
     for (int v=0; v<nv-1; v++) stub(G[v],V(G[v],G[v+1]),r,r);  
     stub(G[nv-1],V(G[nv-1],G[0]),r,r);
     popMatrix();
+    */
     return this;
     }
   pts set_pv_to_pp() {pv=pp; return this;}
@@ -126,7 +140,9 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
       int i=k+s; 
       //float [] xy = float(split(ss[i],",")); 
       String [] SS = split(ss[i],","); 
-      G[k].setTo(float(SS[0]),float(SS[1]),float(SS[2]));
+      G[k].setTo(float(SS[0]),float(SS[1]),200);
+      print("points");
+      print(float(SS[0]),float(SS[1]),float(SS[2]));
       L[k]=SS[3].charAt(0);
       }
     pv=0;
