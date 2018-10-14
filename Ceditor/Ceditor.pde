@@ -29,8 +29,9 @@ pts Q = new pts(); // second polyloop in 3D
 pts R = new pts(); // inbetweening polyloop L(P,t,Q);
 
 //delete later
-pt bA = P(100,100,30);
-pt bB = P(200,100,10);
+pt bA = P(-100,100,30);
+pt bB = P(100,100,30);
+pt O = P(0,0,30);
 vec T1 = V(0,0,1);
 vec T2 = V(1,1,-1);
 
@@ -54,6 +55,7 @@ void draw() {
   setView();  // see pick tab
   showFloor(); // draws dance floor as yellow mat
   doPick(); // sets Of and axes for 3D GUI (see pick Tab)
+  drawElbow(bA,bB,O);
   P.SETppToIDofVertexWithClosestScreenProjectionTo(Mouse()); // for picking (does not set P.pv)
   R.copyFrom(P); 
   for(int i=0; i<level; i++) 
@@ -69,7 +71,7 @@ void draw() {
   //R.displaySkater();
   
   //fill(blue); if(showCurve) Q.drawClosedCurve(3);
-  if(showControl) {fill(grey); P.drawClosedCurve(3);}  // draw control polygon 
+  //if(showControl) {fill(grey); P.drawClosedCurve(3);}  // draw control polygon 
   fill(yellow,100); P.showPicked(); 
   
   fill(black);
