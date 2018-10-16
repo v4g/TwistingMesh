@@ -18,7 +18,7 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
     {
     for (int i=0; i<maxnv; i++) G[i]=P(); 
     for (int i=0; i<maxnv; i++) LL[i]=V(); 
-    for (int i=0; i<maxnv; i++) T[i]=V(0.1f + random(1.0f),0.1f + random(1.0f),0.1f + random(1.0f)); 
+    for (int i=0; i<maxnv; i++) T[i]=V(); 
     return this;
     }     // init all point objects
   pts empty() {nv=0; pv=0; return this;}                                 // resets P so that we can start adding points
@@ -191,6 +191,53 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
       else {fill(red); arrow(B[f],G[f],20);} //
       }
 
-        
+  public void drawCurve()
+  {
+    for(int k=0; k<nv; k++) 
+    {
+      int l = (k+1)%nv;
+      biarc(G[k],G[l],T[k],T[l]);
+    }
+  }
+  public void calculateTangents()
+  {
+     for(int k=0; k<nv; k++) 
+     {
+         int l = (k+1)%nv;
+         int m = (k+2)%nv;
+         
+         vec a = V(G[m],G[k]);
+         vec b = V(G[m],G[l]);
+         
+         vec aCb = cross(a,b);
+         vec n1 = V(sq(a.norm()),b);
+         vec n2 = V(sq(b.norm()),a);
+         vec n3 = cross(M(n1,n2),aCb);
+         float den = 2 * sq(aCb.norm());
+         vec n4 = V(1/den,n3);
+         pt C = P(G[m], n4);
+         
+         aCb.normalize();
+         vec a1 = V(G[k],C);
+         vec tangent1 = cross(a1,aCb);
+         vec tangent2 = cross(V(G[l],C),aCb);
+         vec tangent3 = cross(V(G[m],C),aCb);
+         
+         tangent1.normalize();
+         tangent2.normalize();
+         tangent3.normalize();
+         
+         T[k] = A(T[k],tangent1);
+         T[l] = A(T[l],tangent2);
+         T[m] = A(T[m],tangent3);
+         
+         /*fill(blue);
+         show(C,3);
+         arrow(G[k],100,tangent1,3);
+         arrow(G[l],100,tangent2,3);
+         arrow(G[m],100,tangent3,3);
+       */  
+     }
+  }
 
 } // end of pts class

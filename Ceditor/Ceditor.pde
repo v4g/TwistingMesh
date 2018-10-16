@@ -16,7 +16,9 @@ Boolean
   showCorrectedKeys=true,
   showQuads=true,
   showVecs=true,
-  showTube=false;
+  showTube=false,
+  showTangents=false,
+  showElbow=true;
 float 
   t=0, 
   s=0;
@@ -27,13 +29,16 @@ float defectAngle=0;
 pts P = new pts(); // polyloop in 3D
 pts Q = new pts(); // second polyloop in 3D
 pts R = new pts(); // inbetweening polyloop L(P,t,Q);
-
+pts T = new pts();
 //delete later
-pt bA = P(-100,100,30);
-pt bB = P(100,100,30);
+pt bA = P(-200,0,30);
+pt bB = P(200,0,30);
+pt bC = P(200,200,0);
+pt bE = P(-200,200,60);
+pt bD = P(-0,150,50);
 pt O = P(0,0,30);
-vec T1 = V(0,0,1);
-vec T2 = V(1,1,-1);
+vec T1 = V(0,1,0);
+vec T2 = V(1,0,0);
 
   
 void setup() {
@@ -44,6 +49,7 @@ void setup() {
   P.declare(); Q.declare(); R.declare(); // P is a polyloop in 3D: declared in pts
   //P.resetOnCircle(6,100); Q.copyFrom(P); // use this to get started if no model exists on file: move points, save to file, comment this line
   P.loadPts("data/pts");  Q.loadPts("data/pts2"); // loads saved models from file (comment out if they do not exist yet)
+  T.declare();T.addPt(bA);T.addPt(bB);T.addPt(bC);T.addPt(bD);T.addPt(bE);
   noSmooth();
   frameRate(30);
   }
@@ -55,7 +61,10 @@ void draw() {
   setView();  // see pick tab
   showFloor(); // draws dance floor as yellow mat
   doPick(); // sets Of and axes for 3D GUI (see pick Tab)
-  drawElbow(bA,bB,O);
+  //drawElbow(bA,bB,O);
+  T.calculateTangents();
+  T.drawCurve();
+  //findCenterofTangentPoints(bA, T1, bB, T2);
   P.SETppToIDofVertexWithClosestScreenProjectionTo(Mouse()); // for picking (does not set P.pv)
   R.copyFrom(P); 
   for(int i=0; i<level; i++) 
