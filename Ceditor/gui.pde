@@ -21,6 +21,8 @@ void keyPressed()
   if(key=='}') {showPath=!showPath;}
   if(key=='|') {showCorrectedKeys=!showCorrectedKeys;}
   if(key=='=') {showTube=!showTube;}
+  if(key=='g') {showElbow=!showElbow;}
+  if(key=='h') {showTangents=!showTangents;}
 
   if(key=='3') {P.resetOnCircle(3,300); Q.copyFrom(P);}
   if(key=='4') {P.resetOnCircle(4,400); Q.copyFrom(P);}
