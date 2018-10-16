@@ -56,8 +56,8 @@ void mouseWheel(MouseEvent event)
 void mousePressed() 
   {
   //if (!keyPressed) picking=true;
-  if (!keyPressed) {P.set_pv_to_pp(); println("picked vertex "+P.pp);}
-  if(keyPressed && key=='a') {P.addPt(Of);}
+  if (!keyPressed) {T.set_pv_to_pp(); println("picked vertex "+T.pp);}
+  if(keyPressed && key=='a') {T.addPt(Of);}
 //  if(keyPressed && (key=='f' || key=='s' || key=='b' || key=='c')) {P.addPt(Of,key);}
 
  // if (!keyPressed) P.setPicked();
@@ -74,13 +74,13 @@ void mouseMoved()
   
 void mouseDragged() 
   {
-  if (!keyPressed) P.setPickedTo(Of); 
+  if (!keyPressed) T.setPickedTo(Of); 
 //  if (!keyPressed) {Of.add(ToIJ(V((float)(mouseX-pmouseX),(float)(mouseY-pmouseY),0))); }
   if (keyPressed && key==CODED && keyCode==SHIFT) {Of.add(ToK(V((float)(mouseX-pmouseX),(float)(mouseY-pmouseY),0)));};
-  if (keyPressed && key=='x') P.movePicked(ToIJ(V((float)(mouseX-pmouseX),(float)(mouseY-pmouseY),0))); 
-  if (keyPressed && key=='z') P.movePicked(ToK(V((float)(mouseX-pmouseX),(float)(mouseY-pmouseY),0))); 
-  if (keyPressed && key=='X') P.moveAll(ToIJ(V((float)(mouseX-pmouseX),(float)(mouseY-pmouseY),0))); 
-  if (keyPressed && key=='Z') P.moveAll(ToK(V((float)(mouseX-pmouseX),(float)(mouseY-pmouseY),0))); 
+  if (keyPressed && key=='x') T.movePicked(ToIJ(V((float)(mouseX-pmouseX),(float)(mouseY-pmouseY),0))); 
+  if (keyPressed && key=='z') T.movePicked(ToK(V((float)(mouseX-pmouseX),(float)(mouseY-pmouseY),0))); 
+  if (keyPressed && key=='X') T.moveAll(ToIJ(V((float)(mouseX-pmouseX),(float)(mouseY-pmouseY),0))); 
+  if (keyPressed && key=='Z') T.moveAll(ToK(V((float)(mouseX-pmouseX),(float)(mouseY-pmouseY),0))); 
   if (keyPressed && key=='t')  // move focus point on plane
     {
     if(center) F.sub(ToIJ(V((float)(mouseX-pmouseX),(float)(mouseY-pmouseY),0))); 
