@@ -40,7 +40,7 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
     {
     pp=0; 
     for (int i=1; i<nv; i++) if (d(M,ToScreen(G[i]))<=d(M,ToScreen(G[pp]))) pp=i; 
-    return pp;
+     return pp; //<>//
     }
   pts showPicked() {show(G[pv],23); return this;}
   pt closestProjectionOf(pt M)    // Returns 3D point that is the closest to the projection but also CHANGES iv !!!!

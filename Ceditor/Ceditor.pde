@@ -65,7 +65,7 @@ void draw() {
   T.calculateTangents();
   T.drawCurve();
   //findCenterofTangentPoints(bA, T1, bB, T2);
-  P.SETppToIDofVertexWithClosestScreenProjectionTo(Mouse()); // for picking (does not set P.pv)
+  T.SETppToIDofVertexWithClosestScreenProjectionTo(Mouse()); // for picking (does not set P.pv)
   R.copyFrom(P); 
   for(int i=0; i<level; i++) 
     {
