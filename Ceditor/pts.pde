@@ -3,6 +3,8 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
   { 
     int maxnv = 16000;                 //  max number of vertices
     pt[] G = new pt [maxnv];           // geometry table (vertices)
+    pt[] MP = new pt [maxnv];           // Midpoints (vertices)
+    pt[] O = new pt[maxnv];            //The centers of circles
     char[] L = new char [maxnv];             // labels of points
     vec [] LL = new vec[ maxnv];  // displacement vectors
     vec [] T = new vec[maxnv];   //tangent vectors
@@ -17,6 +19,8 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
   pts declare() 
     {
     for (int i=0; i<maxnv; i++) G[i]=P(); 
+    for (int i=0; i<maxnv; i++) MP[i]=P(); 
+    for (int i=0; i<maxnv; i++) O[i]=P(); 
     for (int i=0; i<maxnv; i++) LL[i]=V(); 
     for (int i=0; i<maxnv; i++) T[i]=V(); 
     return this;
@@ -40,7 +44,7 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
     {
     pp=0; 
     for (int i=1; i<nv; i++) if (d(M,ToScreen(G[i]))<=d(M,ToScreen(G[pp]))) pp=i; 
-     return pp; //<>//
+     return pp;
     }
   pts showPicked() {show(G[pv],23); return this;}
   pt closestProjectionOf(pt M)    // Returns 3D point that is the closest to the projection but also CHANGES iv !!!!
@@ -84,22 +88,13 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
   pts drawBalls(float r) {for (int v=0; v<nv; v++) show(G[v],r); return this;}
   pts showPicked(float r) {show(G[pv],r); return this;}
   pts drawClosedCurve(float r) 
-    {
+  {
     fill(dgreen);
     for (int v=0; v<nv; v++) show(G[v],r*3);    
     fill(magenta);
     for (int v=0; v<nv-1; v++) stub(G[v],V(G[v],G[v+1]),r,r);  
     stub(G[nv-1],V(G[nv-1],G[0]),r,r);
-    for (int v=0; v < nv-1; v++)
-    {
-    try{
-      biarc(G[v],G[(v+1)%nv],T[v],T[(v+1)%nv]);
-      }
-    catch(Exception e)
-    {
-        print("Exception at "+v); //<>//
-    }
-  }
+   //<>//
     /*
     pushMatrix(); //translate(0,0,1); 
     scale(1,1,0.03);  
@@ -196,7 +191,30 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
     for(int k=0; k<nv; k++) 
     {
       int l = (k+1)%nv;
-      biarc(G[k],G[l],T[k],T[l]);
+      biarc(G[k],G[l],T[k],T[l],2*k);
+    }
+    float offset = 0f;
+    for(int k=0; k<2*nv; k++) 
+    {
+      int l = (k+1)%(2*nv);
+      int m = (l+1)%(2*nv);
+      //calculate the y vector of next elbow
+      //and find the angle between this one and the next one's
+      vec yk = cross(V(O[k],MP[k]),V(O[k],MP[l]));
+      vec yl = cross(V(O[l],MP[l]),V(O[l],MP[m]));
+      vec n = cross(V(O[k],MP[l]),yk);
+      float dir = dot(n,cross(yk,yl));
+      float twist = 0f;
+      //don't compute twist for last one. Calculate pretwist
+      if(k < 2*nv - 1)
+        twist = angle(yk,yl);
+      if(dir<0)
+        twist = -twist;
+      if(showElbow)
+      {
+        drawElbow(MP[k],MP[l],O[k],offset,twist);
+        offset = offset + twist;
+      }
     }
   }
   public void calculateTangents()
@@ -240,4 +258,82 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
      }
   }
 
+  void biarc(pt A, pt D, vec T1, vec T2,int k)
+  {
+    T1.normalize();
+    T2.normalize();
+    vec S = V(A,D);
+    vec T = A(T1,T2);
+    float epsilon = 0.2f,d = 0f,a = 0f;
+    boolean done = false;
+    if (T.norm() > 4 - epsilon)
+    {
+      if ( dot(S,T1) > epsilon || dot(S,T1) < -epsilon )
+        a = sq(S.norm())/(4 * dot(S,T1));
+      else
+      {
+        //use semicircles
+        drawSemiCircle(T1,A,P(A,D));
+        drawSemiCircle(V(-1,T2),D,P(A,D));
+        done = true;  
+      }
+    }
+    else
+    {
+      d = (sq(dot(S,T))) + sq(S.norm()) *(4 - sq(T.norm()));
+      a = (sqrt(d) - dot(S,T))/(4- sq(T.norm()));
+    }
+    if(!done)
+    {
+      pt B = P(A,V(a,T1));
+      pt C = P(D,V(-a,T2));
+      pt E = P(B,C);
+      //do beziers for now. Change to something else
+      //find tangent at intermediate point
+      vec T3 = V(B,E);
+      T3.normalize();
+      pt O1 = findCenterofTangentPoints(A,T1,E,T3);
+      pt O2 = findCenterofTangentPoints(E,T3,D,T2);
+      
+      MP[k] = A;
+      MP[k+1] = E;
+      O[k] = O1;
+      O[k+1] = O2;
+      
+      if(showVecs)
+      {
+        fill(magenta);
+        arrow(E,50,T3,3);
+        fill(pink);
+        arrow(A,50,T1,3);
+        arrow(D,50,T2,3);
+      }
+      /*if(T.norm() != 0)
+      {
+        if(showElbow)
+        {
+          drawElbow(A,E,O1);
+          drawElbow(E,D,O2);
+        }
+      }
+      else
+      {
+        fill(white);
+        int n = 20;
+        
+        for (int i = 0; i < n; i++)
+        {
+          pt pOnCurve2 = Bezier(A,B,E,(float)((i+1))/n);
+          pt pOnCurve1 = Bezier(A,B,E,(float)i/n);
+          caplet(pOnCurve1,6,pOnCurve2,6);
+        }
+        for (int i = 0; i < n; i++)
+        {
+          pt pOnCurve2 = Bezier(E,C,D,(float)((i+1))/n);
+          pt pOnCurve1 = Bezier(E,C,D,(float)i/n);
+          caplet(pOnCurve1,6,pOnCurve2,6);
+        }
+      } */ 
+    }
+  }
 } // end of pts class

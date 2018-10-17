@@ -12,11 +12,25 @@ void caplet(pt A, float a, pt B, float b) { // cone section surface that is tang
   coneSection(PA,PB,y,y*s);
   }  
 
+void caplet(pt A, float a, pt B, float b,float o, float t) { // cone section surface that is tangent to Sphere(A,a) and to Sphere(B,b)
+  vec I = U(A,B);
+  float d = d(A,B), s=b/a;
+  float x=(a-b)*a/d, y = sqrt(sq(a)-sq(x));
+  pt PA = P(A,x,I), PB = P(B,s*x,I); 
+  coneSection(PA,PB,y,y*s,o,t);
+  }  
+
 void coneSection(pt P, pt Q, float p, float q) { // surface
   vec V = V(P,Q);
   vec I = U(Normal(V));
   vec J = U(N(I,V));
-  collar(P,V,I,J,p,q);
+  collar(P,V,I,J,p,q,0,0); //<>//
+  }
+void coneSection(pt P, pt Q, float p, float q,float o, float t) { // surface
+  vec V = V(P,Q);
+  vec I = U(Normal(V));
+  vec J = U(N(I,V));
+  collar(P,V,I,J,p,q,o,t);
   }
 
 void cylinderSection(pt P, pt Q, float r) { coneSection(P,Q,r,r);}
@@ -62,6 +76,32 @@ void collar(pt P, vec V, vec I, vec J, float r, float rd) {
   float da = TWO_PI/36;
   beginShape(QUAD_STRIP);
     for(float a=0; a<=TWO_PI+da; a+=da) {v(P(P,r*cos(a),I,r*sin(a),J,0,V)); v(P(P,rd*cos(a),I,rd*sin(a),J,1,V));}
+  endShape();
+  }
+
+//offset : the pretwist of this collar (radians)
+//twist : the change in twist this collar will introduce (radians)
+void collar(pt P, vec V, vec I, vec J, float r, float rd, float offset, float twist) {
+  float da = TWO_PI/36;
+  //twist = 0;
+  //offset = 0;
+  offset = offset % TWO_PI;
+  fill(yellow);
+  
+  beginShape(QUAD_STRIP);
+  for(float a=0; a<=TWO_PI; a+=da) 
+  {
+    if(a >= TWO_PI/4)
+      fill(orange);
+    if(a >= TWO_PI/2)
+      fill(red);
+    if(a >= 3*TWO_PI/4)
+      fill(pink);
+    if(a >= TWO_PI)
+      fill(yellow);
+    v(P(P,r*cos(a + offset),I,r*sin(a + offset),J,0,V)); 
+    v(P(P,rd*cos(a + offset + twist),I,rd*sin(a + offset + twist),J,1,V));
+  }
   endShape();
   }
 
