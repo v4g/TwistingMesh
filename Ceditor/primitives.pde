@@ -85,7 +85,7 @@ void collar(pt P, vec V, vec I, vec J, float r, float rd, float offset, float tw
   float da = TWO_PI/36;
   //twist = 0;
   //offset = 0;
-  offset = offset % TWO_PI;
+  //offset = offset % TWO_PI;
   fill(yellow);
   
   beginShape(QUAD_STRIP);
