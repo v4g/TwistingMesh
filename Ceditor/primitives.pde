@@ -83,8 +83,9 @@ void collar(pt P, vec V, vec I, vec J, float r, float rd) {
 //twist : the change in twist this collar will introduce (radians)
 void collar(pt P, vec V, vec I, vec J, float r, float rd, float offset, float twist) {
   float da = TWO_PI/36;
-  //twist = 0;
-  //offset = 0;
+  int ballAt[] = new int[37];
+  ballAt[0] = 1;
+  ballAt[18] = 1;
   //offset = offset % TWO_PI;
   fill(yellow);
   
@@ -101,9 +102,19 @@ void collar(pt P, vec V, vec I, vec J, float r, float rd, float offset, float tw
       fill(yellow);
     v(P(P,r*cos(a + offset),I,r*sin(a + offset),J,0,V)); 
     v(P(P,rd*cos(a + offset + twist),I,rd*sin(a + offset + twist),J,1,V));
+    
   }
   endShape();
-  }
+  int i=0;
+  fill(blue);
+  for(float a=0; a<=TWO_PI; a+=da,i++) 
+  {
+    if(ballAt[i] == 1)
+    {
+      sphere(P(P,r*cos(a + offset),I,r*sin(a + offset),J,0,V),2);
+    }
+  }  
+}
 
 void cone(pt P, vec V, float r) {fan(P,V,r); disk(P,V,r);}
 

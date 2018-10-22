@@ -209,7 +209,7 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
       //don't compute twist for last one. Calculate pretwist
       twist[k] = angle(yk,yl);
       if(dir<0)
-        twist[k] = -twist[k];
+        twist[k] = TWO_PI-twist[k];
       if(k == 2*nv - 1)
       {
         pretwist = twist[k];
