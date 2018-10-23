@@ -188,6 +188,8 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
 
   public void drawCurve()
   {
+    float pretwist=0f, totalTwist = 0f;
+    float twist[] = new float[maxnv];
     for(int k=0; k<nv; k++) 
     {
       int l = (k+1)%nv;
@@ -204,17 +206,30 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
       vec yl = cross(V(O[l],MP[l]),V(O[l],MP[m]));
       vec n = cross(V(O[k],MP[l]),yk);
       float dir = dot(n,cross(yk,yl));
-      float twist = 0f;
       //don't compute twist for last one. Calculate pretwist
-      if(k < 2*nv - 1)
-        twist = angle(yk,yl);
+      twist[k] = angle(yk,yl);
       if(dir<0)
-        twist = -twist;
-      if(showElbow)
+        twist[k] = TWO_PI-twist[k];
+      if(k == 2*nv - 1)
       {
-        drawElbow(MP[k],MP[l],O[k],offset,twist);
-        offset = offset + twist;
+        pretwist = twist[k];
+        twist[k] = 0;
       }
+      else
+        totalTwist += twist[k];
+      
+    }
+    float pretwistPerSec = pretwist/(2*nv);
+    for(int k=0; k<2*nv; k++) 
+    {
+      int l = (k+1)%(2*nv);
+      float pretwistInSec = pretwistPerSec;
+      if(showTwist)
+        drawElbow(MP[k],MP[l],O[k],0,0);
+      else
+        drawElbow(MP[k],MP[l],O[k],offset,twist[k] + pretwistInSec);
+      offset += pretwistInSec;
+      
     }
   }
   public void calculateTangents()
