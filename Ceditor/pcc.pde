@@ -72,11 +72,14 @@ void drawElbow(pt pt1, pt pt2, pt o,float offset, float twist)
     vec OPr2 = A(V(cos((float)(i+1)* angle/n),OP1),V(sin((float)(i+1)* angle/n),orth));
     pt p_r2 = P(o,OPr2);
     vec p1p2 = V(p_r1,p_r2);
-    fill(black);
-    show(p_r1,2);
-    show(p_r2,2);
+    if(showElbow)
+    {
+      fill(black);
+      show(p_r1,2);
+      show(p_r2,2);
+    }
     fill(grey);
-    collar(p_r1,p1p2,cross(p1p2,axis).normalize(),axis,6,6,offset,dTwist);
+    collar(p_r1,p1p2,cross(p1p2,axis).normalize(),axis,6,6,offset,dTwist,i);
     //caplet(p_r1,6,p_r2,6,offset,dTwist);
     offset += dTwist;
   }

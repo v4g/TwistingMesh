@@ -224,11 +224,12 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
     {
       int l = (k+1)%(2*nv);
       float pretwistInSec = pretwistPerSec;
-      if(showElbow)
-      {
+      if(showTwist)
+        drawElbow(MP[k],MP[l],O[k],0,0);
+      else
         drawElbow(MP[k],MP[l],O[k],offset,twist[k] + pretwistInSec);
-        offset += pretwistInSec;
-      }
+      offset += pretwistInSec;
+      
     }
   }
   public void calculateTangents()

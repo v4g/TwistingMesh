@@ -7,13 +7,13 @@ void keyPressed()
   if(key==']') showBalls=!showBalls;
   if(key=='f') {P.setPicekdLabel(key);}
   if(key=='s') {P.setPicekdLabel(key);}
-  if(key=='b') {P.setPicekdLabel(key);}
+  //if(key=='b') {P.setPicekdLabel(key);}
   if(key=='c') {P.setPicekdLabel(key);}
   if(key=='F') {P.addPt(Of,'f');}
   if(key=='S') {P.addPt(Of,'s');}
   if(key=='B') {P.addPt(Of,'b');}
   if(key=='C') {P.addPt(Of,'c');}
-  if(key=='m') {method=(method+1)%5;}
+  if(key=='m') {method=(method+1)%4;}
   if(key=='[') {showControl=!showControl;}
   if(key==']') {showQuads=!showQuads;}
   if(key=='{') {showCurve=!showCurve;}
@@ -23,7 +23,11 @@ void keyPressed()
   if(key=='=') {showTube=!showTube;}
   if(key=='g') {showElbow=!showElbow;}
   if(key=='h') {showTangents=!showTangents;}
-
+  if(key=='b') {showBraid=!showBraid;}
+  if(key=='d') {nBraids++;}
+  if(key=='v') {showTwist = !showTwist;}
+  if(key=='c') {nBraids = max(nBraids-1,1);}
+  if(key=='n') {changeSection();}
   if(key=='3') {P.resetOnCircle(3,300); Q.copyFrom(P);}
   if(key=='4') {P.resetOnCircle(4,400); Q.copyFrom(P);}
   if(key=='5') {P.resetOnCircle(5,500); Q.copyFrom(P);}
@@ -69,6 +73,7 @@ void mouseMoved()
   //if (!keyPressed) 
   if (keyPressed && key==' ') {rx-=PI*(mouseY-pmouseY)/height; ry+=PI*(mouseX-pmouseX)/width;};
   if (keyPressed && key=='`') dz+=(float)(mouseY-pmouseY); // approach view (same as wheel)
+  if (keyPressed && key=='s') {tw+=(float)(mouseY-pmouseY);};
   change=true;
   }
   
@@ -105,6 +110,21 @@ void displayFooter()  // Displays help text at the bottom
     scribeFooter(guide,1); 
     scribeFooter(menu,0); 
     }
+void changeSection()
+{
+  showSection = !showSection;
+  if(showSection)
+  {
+    T.empty();
+    T.addPt(bA);T.addPt(bB);
+  }
+  else
+  {
+    T.empty();
+    T.addPt(bA);T.addPt(bB);T.addPt(bC);T.addPt(bD);T.addPt(bE);
+  
+  }
+}
 
 String title ="3D curve editor", name ="Jarek Rossignac",
        menu="?:help, !:picture, ~:(start/stop)capture, space:rotate, `/wheel:closer, t/T:target, a:anim, #:quit",
