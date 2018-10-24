@@ -8,6 +8,7 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
     char[] L = new char [maxnv];             // labels of points
     vec [] LL = new vec[ maxnv];  // displacement vectors
     vec [] T = new vec[maxnv];   //tangent vectors
+    float [] arcLength = new float[maxnv];  
     Boolean loop=true;          // used to indicate closed loop 3D control polygons
     int pv =0,     // picked vertex index,
         iv=0,      //  insertion vertex index
@@ -188,7 +189,7 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
 
   public void drawCurve()
   {
-    float pretwist=0f, totalTwist = 0f;
+    float pretwist=0f, totalTwist = 0f,totalLength = 0f;
     float twist[] = new float[maxnv];
     for(int k=0; k<nv; k++) 
     {
@@ -202,6 +203,8 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
       int m = (l+1)%(2*nv);
       //calculate the y vector of next elbow
       //and find the angle between this one and the next one's
+      arcLength[k] = findArcLength(MP[k],MP[l],O[k]);
+      totalLength += arcLength[k];
       vec yk = cross(V(O[k],MP[k]),V(O[k],MP[l]));
       vec yl = cross(V(O[l],MP[l]),V(O[l],MP[m]));
       vec n = cross(V(O[k],MP[l]),yk);
@@ -210,26 +213,38 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
       twist[k] = angle(yk,yl);
       if(dir<0)
         twist[k] = TWO_PI-twist[k];
+      totalTwist += twist[k];
       if(k == 2*nv - 1)
       {
         pretwist = twist[k];
         twist[k] = 0;
       }
-      else
-        totalTwist += twist[k];
       
     }
-    float pretwistPerSec = pretwist/(2*nv);
+    pretwist = (totalTwist%TWO_PI);
+    float pretwistPerSec = pretwist/totalLength;
+    
+    float rotationsPerSec = (nRotations * TWO_PI)/totalLength;
+    float startAngle = 0;
+    float endAngle = 0;
     for(int k=0; k<2*nv; k++) 
     {
+      endAngle = startAngle + rotationsPerSec * arcLength[k];
       int l = (k+1)%(2*nv);
-      float pretwistInSec = pretwistPerSec;
-      if(showTwist)
+      float pretwistInSec = pretwistPerSec * arcLength[k];
+      if(showTwist==0)
         drawElbow(MP[k],MP[l],O[k],0,0);
+      else if(showTwist ==1)
+      {
+        drawElbow(MP[k],MP[l],O[k],offset,0,startAngle,endAngle);
+        offset += -twist[k];
+      }
       else
-        drawElbow(MP[k],MP[l],O[k],offset,twist[k] + pretwistInSec);
-      offset += pretwistInSec;
-      
+      {
+        drawElbow(MP[k],MP[l],O[k],offset,pretwistInSec,startAngle,endAngle);
+        offset += (pretwistInSec-twist[k]);
+      }
+      startAngle = endAngle;
     }
   }
   public void calculateTangents()

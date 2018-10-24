@@ -13,19 +13,22 @@ void keyPressed()
   if(key=='S') {P.addPt(Of,'s');}
   if(key=='B') {P.addPt(Of,'b');}
   if(key=='C') {P.addPt(Of,'c');}
-  if(key=='m') {method=(method+1)%4;}
-  if(key=='[') {showControl=!showControl;}
-  if(key==']') {showQuads=!showQuads;}
+  if(key=='m') {method=(method+1)%15;}
+  //if(key=='[') {showControl=!showControl;}
+  //if(key==']') {showQuads=!showQuads;}
   if(key=='{') {showCurve=!showCurve;}
   if(key=='\\') {showKeys=!showKeys;}
   if(key=='}') {showPath=!showPath;}
   if(key=='|') {showCorrectedKeys=!showCorrectedKeys;}
   if(key=='=') {showTube=!showTube;}
   if(key=='g') {showElbow=!showElbow;}
+  if(key=='k') {showFreePath=!showFreePath;}
   if(key=='h') {showTangents=!showTangents;}
+  if(key==']') {nRotations++;}
+  if(key=='[') {nRotations--;}
   if(key=='b') {showBraid=!showBraid;}
   if(key=='d') {nBraids++;}
-  if(key=='v') {showTwist = !showTwist;}
+  if(key=='v') {showTwist = (showTwist+1)%3;}
   if(key=='c') {nBraids = max(nBraids-1,1);}
   if(key=='n') {changeSection();}
   if(key=='3') {P.resetOnCircle(3,300); Q.copyFrom(P);}
