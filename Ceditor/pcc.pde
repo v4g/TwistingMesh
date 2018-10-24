@@ -28,13 +28,44 @@ void drawSemiCircle(vec t, pt p_start, pt p_end)
     caplet(pOnCurve1,6,pOnCurve2,6); //<>//
   }
 }
+void drawElbow(pt pt1, pt pt2, pt o,float offset, float twist)
+{
+  drawElbow(pt1,pt2,o,offset,twist,0,0);
+}
 
+float twistMethod(float angle,int met)
+{
+  if(met == -1)
+    met = method;
+  if(met==0)
+    return 3*angle;//*(sin(2*angle));//+cos(angle));
+  else if (met==1) 
+    return 3*(sin(2*angle)+cos(angle));
+  else if (met==2) 
+    return 3*(sin(2*angle));
+  else if (met==6) 
+    return 3*(cos(2*angle));
+  else if (met==3) 
+    return 3*(sin(2*angle)*cos(2*angle));
+  else if (met==4) 
+    return 3*(sin(2*angle)*sin(angle));
+  else if (met==5) 
+    return 3*(ceil(sin(2*angle)));//*sin(angle));
+  else if (met==7) 
+    return 3*((sin(angle)));//*sin(angle));
+  else if (met==8) 
+    return 3*((sin(-angle)));//*sin(angle));
+  else if (met==9) 
+    return 3*((sin(2*PI/2 + PI/4 + angle)));//*sin(angle));
+  else //if (method==1) 
+    return 3*(floor(sin(2*angle)));//*sin(angle));
+}
 /*
 Draw an arc. Use two points on the elbow and the center of the circle as the other point
 pt1 ,pt2 : start and end points on the elbow
 o : the center of the circle
 */
-void drawElbow(pt pt1, pt pt2, pt o,float offset, float twist)
+void drawElbow(pt pt1, pt pt2, pt o,float offset, float twist,float startAngle, float endAngle)
 {
   //Create axis as cross product of two vectors in circle's plane
   vec OP1 = V(o,pt1);
@@ -45,26 +76,38 @@ void drawElbow(pt pt1, pt pt2, pt o,float offset, float twist)
   vec orth = cross(axis,OP1);
   orth.normalize();
   orth.mul(OP2.norm());
-  /*fill(red);
-  arrow(o,OP1, 3);
-  arrow(o,orth,3);
-  arrow(o,100,axis,3);
-  fill(yellow);
-  arrow(o,OP2, 3);
-  fill(blue);
-  show(pt1,2);
-  show(pt2,2);
-  show(o,2);
-  */
   float angle = angle(OP1,OP2);
-    
   //We have everything we need to continously rotate OP1 till it reaches OP2
   //P` = O + cosa.OP1 + sina.Orth
   int n = 20;
-  int ballAt[] = new int[n];
-  //print("Offset",offset);
-  //print("Twist",twist);
   float dTwist = twist/n;
+  float da = (endAngle - startAngle)/n;
+  int ballAt[] = new int[73];
+  for (int div = 0,counter=0; div <= 72; div+= 72/nBraids,counter++)
+  {
+    ballAt[counter] = div;
+  }
+  int twistMethod[] = new int[10];
+  for (int counter = 0; counter < nBraids; counter++)
+  {
+    twistMethod[counter]= -1;
+  }
+  if(method == 10)
+  {
+    twistMethod[0]=7;
+    twistMethod[1]=7;
+    twistMethod[2]=9;
+    twistMethod[3]=9;
+  }
+  float offset2[] = new float[nBraids];
+  for (int counter = 0; counter < nBraids; counter++)
+  {
+    float deg = 0;//float(ballAt[counter])/72 * TWO_PI/2;
+        
+    offset2[counter]= offset;
+    if(!showFreePath)
+      offset2[counter] += twistMethod(deg+startAngle,twistMethod[counter]);
+  }
   for (int i = 0; i < n; i++)
   {
     vec OPr1 = A(V(cos((float)i * angle/n),OP1),V(sin((float)i*angle/n),orth));
@@ -78,14 +121,44 @@ void drawElbow(pt pt1, pt pt2, pt o,float offset, float twist)
       show(p_r1,2);
       show(p_r2,2);
     }
+    float bTwist[] = new float[nBraids];
+    for (int counter = 0; counter < nBraids; counter++)
+    {
+      bTwist[counter] = dTwist;
+    }
+    if(showBraid)
+    {
+      for (int counter = 0; counter < nBraids; counter++)
+      {
+        vec I_axis = cross(p1p2,axis).normalize();
+        vec J_axis = R(axis,offset2[counter],I_axis,axis);
+        I_axis = R(I_axis,offset2[counter],I_axis,axis);
+        float deg = 0;//float(ballAt[counter])/72 * TWO_PI/2;
+        if(!showFreePath)
+        {
+          bTwist[counter] = dTwist + twistMethod(deg+startAngle+da,twistMethod[counter]) - twistMethod(deg+startAngle,twistMethod[counter]);//float(i)/n * TWO_PI);
+        }
+        braid(p_r1,p1p2,I_axis,J_axis,6,6,0,bTwist[counter],ballAt[counter]);
+      }
+    }
     fill(grey);
-    collar(p_r1,p1p2,cross(p1p2,axis).normalize(),axis,6,6,offset,dTwist,i);
-    //caplet(p_r1,6,p_r2,6,offset,dTwist);
+    collar(p_r1,p1p2,cross(p1p2,axis).normalize(),axis,6,6,offset,dTwist,startAngle,da);
+    startAngle += da;
     offset += dTwist;
+    for (int counter = 0; counter < nBraids; counter++)
+    {
+      offset2[counter] += (bTwist[counter]);
+    }
   }
-  //print("Offset after",offset);
 }
-
+float findArcLength(pt a, pt b, pt o)
+{
+  vec v1 = V(o,a);
+  vec v2 = V(o,b);
+  float ang = angle(v1,v2);
+  float len = ang * v1.norm(); 
+  return len;
+}
 pt findCenterofTangentPoints(pt p1, vec v1, pt p2, vec v2)
 {
   pt o;

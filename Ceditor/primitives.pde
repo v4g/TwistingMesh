@@ -30,7 +30,7 @@ void coneSection(pt P, pt Q, float p, float q,float o, float t) { // surface
   vec V = V(P,Q);
   vec I = U(Normal(V));
   vec J = U(N(I,V));
-  collar(P,V,I,J,p,q,o,t,0);
+  collar(P,V,I,J,p,q,o,t,0,0);
   }
 
 void cylinderSection(pt P, pt Q, float r) { coneSection(P,Q,r,r);}
@@ -81,7 +81,7 @@ void collar(pt P, vec V, vec I, vec J, float r, float rd) {
 
 //offset : the pretwist of this collar (radians)
 //twist : the change in twist this collar will introduce (radians)
-void collar(pt P, vec V, vec I, vec J, float r, float rd, float offset, float twist,int n) {
+void collar(pt P, vec V, vec I, vec J, float r, float rd, float offset, float twist,float n,float dn) {
   float da = TWO_PI/36;
   //offset = offset % TWO_PI;  
   fill(yellow);
@@ -91,9 +91,9 @@ void collar(pt P, vec V, vec I, vec J, float r, float rd, float offset, float tw
   for(float a=0; a<=TWO_PI; a+=da) 
   {
     if(a >= TWO_PI/4)
-      fill(orange);
+      fill(cyan);
     if(a >= TWO_PI/2)
-      fill(red);
+      fill(orange);
     if(a >= 3*TWO_PI/4)
       fill(pink);
     if(a >= TWO_PI)
@@ -104,58 +104,39 @@ void collar(pt P, vec V, vec I, vec J, float r, float rd, float offset, float tw
   }
   endShape();
   }
+  
+}
+
+void braid(pt P, vec V, vec I, vec J, float r, float rd, float offset, float twist,float b)
+{
+  float da = TWO_PI/36;
+  
   if(showBraid)
   {
-    int ballAt[] = new int[73];
-    
-    for (int div = 0; div <= 72; div+= 72/nBraids)
-    {
-      ballAt[div] = 1;
-    }
     int i=0;
-    fill(yellow);//stroke(5);
-    for(float a=0; a<=TWO_PI; a+=(da/2),i++) 
-    {
-      float r2 = r;//*cos(float(i)/36 + float(n)/20*PI);
-      float r3 = r;//*cos(float(i+1)/36 + float(n+1)/20*PI);
-      float pattern_x = cos(( float(n)/20 * TWO_PI));
-      float pattern_y = cos(2*( float(n)/20 * TWO_PI));
-      float pattern_nx = cos(( float(n+1)/20 * TWO_PI));
-      float pattern_ny = cos(2*(float(n+1)/20 * TWO_PI));
-      float pattern2_x = sin(( float(n)/20 * TWO_PI));
-      float pattern2_y = sin(2*( float(n)/20 * TWO_PI));
-      float pattern2_nx = sin(( float(n+1)/20 * TWO_PI));
-      float pattern2_ny = sin(2*(float(n+1)/20 * TWO_PI));
-      float e = 0.1;
-      if(a >= TWO_PI/4 - e)
-        fill(orange);
-      if(a >= TWO_PI/2 - e)
-        fill(red);
-      if(a >= 3*TWO_PI/4 - e)
-        fill(pink);
-      if(a >= TWO_PI-e)
-        fill(yellow);
-      if(ballAt[i] == 1)
-      {
-        //beginShape(LINES);
-        //sphere(P(P,r2*cos(a + offset)*pattern,I,r2*sin(a + offset),J,0,V),1);
-        if(method == 0)
-          caplet(P(P,r2*cos(a + offset),I,r2*sin((a + offset)),J,0,V),2,P(P,r3*cos(a + offset + twist),I,r3*sin((a + offset + twist)),J,1,V),2);
-        else if (method == 1)
-          caplet(P(P,r2*cos(a + offset)*pattern_x,I,r2*sin((a + offset))*pattern_y,J,0,V),2,P(P,r3*cos(a + offset + twist)*pattern_nx,I,r3*sin((a + offset + twist))*pattern_ny,J,1,V),2);
-        else if (method == 4)
-          caplet(P(P,r2*sin(a + offset),I,r2*sin(2*(a + offset)),J,0,V),2,P(P,r3*sin(a + offset + twist),I,r3*sin(2*(a + offset + twist)),J,1,V),2);
-        else
-          caplet(P(P,r2*cos(a + offset)*pattern2_x,I,r2*sin((a + offset))*pattern2_y,J,0,V),2,P(P,r3*cos(a + offset + twist)*pattern2_nx,I,r3*sin((a + offset + twist))*pattern2_ny,J,1,V),2);
-        //v(P(P,r2*cos(a + offset)*pattern,I,r2*sin(a + offset),J,0,V)); 
-        //v(P(P,r3*cos(a + offset + twist)*pattern_2,I,r3*sin(a + offset + twist),J,1,V));
-        //endShape();  
-      }
-    }
+    fill(red);//stroke(5);
+    float a = b * da/2;
+    float r2 = r;//*cos(2*a+2*period+n);//*cos(n);//*cos(float(i)/36 + float(n)/20*PI);
+    float r3 = r;//*cos(2*a+2*period+n+dn);//*cos(n+dn);//*cos(float(i+1)/36 + float(n+1)/20*PI);
+    float e = 0.1;
+    if(a >= TWO_PI/4 - e)
+      fill(blue);
+    if(a >= TWO_PI/2 - e)
+      fill(black);
+    if(a >= 3*TWO_PI/4 - e)
+      fill(grey);
+    if(a >= TWO_PI-e)
+      fill(red);
+    //beginShape(LINES);
+    //sphere(P(P,r2*cos(a + offset),I,r2*sin(a + offset),J,0,V),1);
+    caplet(P(P,r2*cos(a + offset),I,r2*sin((a + offset)),J,0,V),2,P(P,r3*cos(a + offset + twist),I,r3*sin((a + offset + twist)),J,1,V),2);
+    //v(P(P,r2*cos(a + offset)*pattern,I,r2*sin(a + offset),J,0,V)); 
+    //v(P(P,r3*cos(a + offset + twist)*pattern_2,I,r3*sin(a + offset + twist),J,1,V));
+    //endShape();  
+    
     noFill();noStroke();
   }
 }
-
 void cone(pt P, vec V, float r) {fan(P,V,r); disk(P,V,r);}
 
 void stub(pt P, vec V, float r, float rd) // cone section

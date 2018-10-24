@@ -20,7 +20,7 @@ Boolean
   showTangents=false,
   showElbow=true,
   showBraid=false,
-  showTwist=false,
+  showFreePath=true,
   showSection=true;
 float 
   t=0, 
@@ -34,8 +34,8 @@ pts Q = new pts(); // second polyloop in 3D
 pts R = new pts(); // inbetweening polyloop L(P,t,Q);
 pts T = new pts();
 //delete later
-pt bA = P(-300,100,100);
-pt bB = P(300,100,100);
+pt bA = P(-150,100,100);
+pt bB = P(150,100,100);
 pt bC = P(200,200,70);
 pt bE = P(-200,200,120);
 pt bD = P(-0,150,90);
@@ -44,7 +44,8 @@ vec T1 = V(0,1,0);
 vec T2 = V(1,0,0);
 float tw = 0f, offset = 0f;
 int nBraids = 2;
-  
+int showTwist = 1;  
+float nRotations = 1;
 void setup() {
   myFace = loadImage("data/pic.jpg");  // load image from file pic.jpg in folder data *** replace that file with your pic of your own face
   textureMode(NORMAL);          
@@ -67,7 +68,7 @@ void draw() {
   doPick(); // sets Of and axes for 3D GUI (see pick Tab)
   if(showSection)
   {
-    drawElbow(T.G[0],T.G[1],O,offset,tw);
+    drawElbow(T.G[0],T.G[1],O,offset,tw,0,nRotations*PI);
   }
   else
   {
