@@ -138,6 +138,10 @@ void drawElbow(pt pt1, pt pt2, pt o,float offset, float twist,float startAngle, 
         {
           bTwist[counter] = dTwist + twistMethod(deg+startAngle+da,twistMethod[counter]) - twistMethod(deg+startAngle,twistMethod[counter]);//float(i)/n * TWO_PI);
         }
+        else
+        {
+          bTwist[counter] = dTwist; 
+        }
         braid(p_r1,p1p2,I_axis,J_axis,6,6,0,bTwist[counter],ballAt[counter]);
       }
     }

@@ -247,7 +247,8 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
       startAngle = endAngle;
     }
   }
-  public void calculateTangents()
+  
+  void calculateTangents(boolean weight)
   {
      for(int k=0; k<nv; k++) 
      {
@@ -265,6 +266,8 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
          vec n4 = V(1/den,n3);
          pt C = P(G[m], n4);
          
+         float radius = weight? n4.norm(): 1;
+         
          aCb.normalize();
          vec a1 = V(G[k],C);
          vec tangent1 = cross(a1,aCb);
@@ -275,9 +278,9 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
          tangent2.normalize();
          tangent3.normalize();
          
-         T[k] = A(T[k],tangent1);
-         T[l] = A(T[l],tangent2);
-         T[m] = A(T[m],tangent3);
+         T[k] = A(T[k],V(radius,tangent1));
+         T[l] = A(T[l],V(radius,tangent2));
+         T[m] = A(T[m],V(radius,tangent3));
          
          /*fill(blue);
          show(C,3);
@@ -286,6 +289,36 @@ class pts // class for manipulaitng and displaying pointclouds or polyloops in 3
          arrow(G[m],100,tangent3,3);
        */  
      }
+  }
+  
+  public void calculateAverageTangents()
+  {
+    for(int k=0; k<nv; k++) 
+     {
+         int l = (k+1)%nv;
+         int m = (k+2)%nv;
+         
+         vec a = V(G[k],G[l]);
+         vec b = V(G[l],G[m]);
+         
+         T[l] = V(a,b);
+     }
+  }
+  
+  public void tangentRoutine()
+  {
+    if(tangentRoutine == 0)
+    {
+      calculateTangents(false);
+    }
+    else if(tangentRoutine == 1)
+    {
+      calculateAverageTangents();
+    }
+    else if(tangentRoutine == 2)
+    {
+      calculateTangents(true);
+    }
   }
 
   void biarc(pt A, pt D, vec T1, vec T2,int k)
