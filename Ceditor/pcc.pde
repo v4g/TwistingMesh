@@ -79,7 +79,7 @@ void drawElbow(pt pt1, pt pt2, pt o,float offset, float twist,float startAngle, 
   float angle = angle(OP1,OP2);
   //We have everything we need to continously rotate OP1 till it reaches OP2
   //P` = O + cosa.OP1 + sina.Orth
-  int n = 20;
+  int n = 40;
   float dTwist = twist/n;
   float da = (endAngle - startAngle)/n;
   int ballAt[] = new int[73];
