@@ -26,7 +26,7 @@ float
   t=0, 
   s=0;
 int
-  f=0, maxf=2*30, level=4, method=0;
+  f=0, maxf=2*30, level=4, method=0, tangentRoutine = 0;
 String SDA = "angle";
 float defectAngle=0;
 pts P = new pts(); // polyloop in 3D
@@ -47,7 +47,8 @@ int nBraids = 2;
 int showTwist = 1;  
 float nRotations = 1;
 void setup() {
-  myFace = loadImage("data/pic.jpg");  // load image from file pic.jpg in folder data *** replace that file with your pic of your own face
+  student1 = loadImage("data/student1.jpg");
+  student2 = loadImage("data/student2.jpg");
   textureMode(NORMAL);          
   //size(900, 900, P3D); // P3D means that we will do 3D graphics
   size(900, 900, P3D); // P3D means that we will do 3D graphics
@@ -72,7 +73,7 @@ void draw() {
   }
   else
   {
-    T.calculateTangents();
+    T.tangentRoutine();
     T.drawCurve();
     
   }
@@ -114,6 +115,13 @@ void draw() {
  
   popMatrix(); // done with 3D drawing. Restore front view for writing text on canvas
   hint(DISABLE_DEPTH_TEST); // no z-buffer test to ensure that help text is visible
+    if(method==11) scribeHeader("Floor Sin",2);
+    if(method==10) scribeHeader("Sin of Offset angle",2);
+    if(method==9) scribeHeader("Inverted Sin",2);
+    if(method==8) scribeHeader("Halved Sin",2);
+    if(method==7) scribeHeader("Sin^2",2);    
+    if(method==6) scribeHeader("Quintic UBS",2);    
+    if(method==5) scribeHeader("Ceiling Sin",2);
     if(method==4) scribeHeader("Quintic UBS",2);
     if(method==3) scribeHeader("Sin on cosine",2);
     if(method==2) scribeHeader("Sin",2);
